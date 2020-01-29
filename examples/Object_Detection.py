@@ -15,4 +15,4 @@ class Detection():
             cv2.rectangle(img, (x, y), (x + w, y + h), (255, 255, 0), 2)
             break
 
-        return img
+        return img, (x, y, w, h)
