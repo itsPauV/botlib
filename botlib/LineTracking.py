@@ -2,13 +2,16 @@ import numpy as np
 import cv2
 
 class LineTracking():
+    def __init__(self):
+        print("Init")
+        self.video_capture = cv2.VideoCapture(0)
+        self.video_capture.set(3, 160)
+        self.video_capture.set(4, 120)
+
     def track_line(self):
         # Capture the frames
-        #video_capture = cv2.VideoCapture(0)
-        video_capture.set(3, 160)
-        video_capture.set(4, 120)
-
-        ret, frame = video_capture.read()
+        print("Get frame")
+        ret, frame = self.video_capture.read()
 
         # Crop the image
         crop_img = frame[60:120, 0:160]
@@ -23,9 +26,9 @@ class LineTracking():
         ret,thresh = cv2.threshold(blur,60,255,cv2.THRESH_BINARY_INV)
 
         # Find the contours of the frame
-        _, contours,hierarchy = cv2.findContours(thresh.copy(), 1, cv2.CHAIN_APPROX_NONE)
-
-        # Find the biggest contour (if detected)
+        contours, hierarchy = cv2.findContours(thresh.copy(), 1, cv2.CHAIN_APPROX_NONE)
+        
+	# Find the biggest contour (if detected)
         if len(contours) > 0:
             c = max(contours, key=cv2.contourArea)
             M = cv2.moments(c)
@@ -38,17 +41,16 @@ class LineTracking():
 
             cv2.drawContours(crop_img, contours, -1, (0,255,0), 1)
 
-            #if cx >= 100:
-            #    print("Turn Left!")
-            #if cx < 100 and cx > 70:
-            #    print("On Track!")
-            #if cx <= 90:
-            #    print("Turn Right")
-            #print(cx)
+            if cx >= 100:
+                print("Turn Right!")
+            if cx < 100 and cx > 70:
+                print("On Track!")
+            if cx <= 70:
+                print("Turn Left")
+            print(cx)
             return cx
 
 if __name__ == "__main__":
-    video_capture = cv2.VideoCapture(0)
+    lt = LineTracking()
     while True:
-        lt = LineTracking()
         print(lt.track_line())
